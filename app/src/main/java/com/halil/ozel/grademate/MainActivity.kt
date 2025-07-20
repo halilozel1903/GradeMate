@@ -19,6 +19,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,6 +41,7 @@ fun GradeCalculatorScreen() {
     var midtermInput by remember { mutableStateOf("") }
     var finalInput by remember { mutableStateOf("") }
     var result by remember { mutableStateOf("") }
+    var gradeColor by remember { mutableStateOf(Color.Black) }
 
     var midtermWeight by remember { mutableStateOf(40f) }
     val finalWeightComputed = 100f - midtermWeight
@@ -79,17 +82,18 @@ fun GradeCalculatorScreen() {
 
             if (midtermGrade != null && finalGrade != null) {
                 val average = midtermGrade * (midtermWeight / 100f) + finalGrade * (finalWeightComputed / 100f)
-                val letterGrade = when (average) {
-                    in 90f..100f -> "AA"
-                    in 85f..<90f -> "BA"
-                    in 80f..<85f -> "BB"
-                    in 70f..<80f -> "CB"
-                    in 60f..<70f -> "CC"
-                    in 50f..<60f -> "DC"
-                    in 40f..<50f -> "DD"
-                    else -> "FF"
+                val (grade, color) = when (average) {
+                    in 90f..100f -> "AA" to Color(0xFF2E7D32)
+                    in 85f..<90f -> "BA" to Color(0xFF388E3C)
+                    in 80f..<85f -> "BB" to Color(0xFF66BB6A)
+                    in 70f..<80f -> "CB" to Color(0xFFFFF176)
+                    in 60f..<70f -> "CC" to Color(0xFFFFEE58)
+                    in 50f..<60f -> "DC" to Color(0xFFFFB74D)
+                    in 40f..<50f -> "DD" to Color(0xFFFFA726)
+                    else -> "FF" to Color(0xFFD32F2F)
                 }
-                result = "Average: %.2f → Letter Grade: %s".format(average, letterGrade)
+                gradeColor = color
+                result = "Average: %.2f → Letter Grade: %s".format(average, grade)
             } else {
                 result = "Please enter valid numbers!"
             }
@@ -98,7 +102,12 @@ fun GradeCalculatorScreen() {
         }
 
         if (result.isNotEmpty()) {
-            Text(text = result, fontSize = 18.sp)
+            Text(
+                text = result,
+                fontSize = 18.sp,
+                color = gradeColor,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }
