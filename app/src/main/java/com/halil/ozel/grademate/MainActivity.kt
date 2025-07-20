@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,6 +24,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -54,13 +56,18 @@ fun GradeCalculatorScreen() {
     var midtermWeight by remember { mutableFloatStateOf(40f) }
     val finalWeightComputed = 100f - midtermWeight
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        Column(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
         Text("🎓 Grade Calculator", fontSize = 24.sp)
 
         OutlinedTextField(
@@ -68,7 +75,10 @@ fun GradeCalculatorScreen() {
             onValueChange = {
                 midtermInput = it.filter { c -> c.isDigit() }.take(3)
                 midtermError = when {
-                    midtermInput.isBlank() -> "Midterm grade cannot be empty"
+                    midtermInput.isBlank() -> {
+                        gradeResult = null
+                        "Midterm grade cannot be empty"
+                    }
                     midtermInput.toIntOrNull() !in 0..100 -> "Enter a value between 0 and 100"
                     else -> null
                 }
@@ -84,7 +94,10 @@ fun GradeCalculatorScreen() {
             onValueChange = {
                 finalInput = it.filter { c -> c.isDigit() }.take(3)
                 finalError = when {
-                    finalInput.isBlank() -> "Final grade cannot be empty"
+                    finalInput.isBlank() -> {
+                        gradeResult = null
+                        "Final grade cannot be empty"
+                    }
                     finalInput.toIntOrNull() !in 0..100 -> "Enter a value between 0 and 100"
                     else -> null
                 }
@@ -143,5 +156,6 @@ fun GradeCalculatorScreen() {
         }
 
         Spacer(modifier = Modifier.height(32.dp))
+        }
     }
 }
