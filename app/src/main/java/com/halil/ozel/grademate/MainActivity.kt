@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -35,9 +36,12 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun GradeCalculatorScreen() {
-    var midterm by remember { mutableStateOf("") }
-    var finalExam by remember { mutableStateOf("") }
+    var midtermInput by remember { mutableStateOf("") }
+    var finalInput by remember { mutableStateOf("") }
     var result by remember { mutableStateOf("") }
+
+    var midtermWeight by remember { mutableStateOf(40f) }
+    val finalWeightComputed = 100f - midtermWeight
 
     Column(
         modifier = Modifier
@@ -48,25 +52,33 @@ fun GradeCalculatorScreen() {
         Text("🎓 Grade Calculator", fontSize = 24.sp)
 
         OutlinedTextField(
-            value = midterm,
-            onValueChange = { midterm = it },
+            value = midtermInput,
+            onValueChange = { midtermInput = it },
             label = { Text("Midterm Grade") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
 
         OutlinedTextField(
-            value = finalExam,
-            onValueChange = { finalExam = it },
+            value = finalInput,
+            onValueChange = { finalInput = it },
             label = { Text("Final Grade") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
 
+        Text("Midterm Weight: ${midtermWeight.toInt()}% — Final Weight: ${finalWeightComputed.toInt()}%")
+
+        Slider(
+            value = midtermWeight,
+            onValueChange = { midtermWeight = it },
+            valueRange = 0f..100f
+        )
+
         Button(onClick = {
-            val midtermGrade = midterm.toFloatOrNull()
-            val finalGrade = finalExam.toFloatOrNull()
+            val midtermGrade = midtermInput.toFloatOrNull()
+            val finalGrade = finalInput.toFloatOrNull()
 
             if (midtermGrade != null && finalGrade != null) {
-                val average = midtermGrade * 0.4f + finalGrade * 0.6f
+                val average = midtermGrade * (midtermWeight / 100f) + finalGrade * (finalWeightComputed / 100f)
                 val letterGrade = when (average) {
                     in 90f..100f -> "AA"
                     in 85f..<90f -> "BA"
