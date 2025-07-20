@@ -4,44 +4,89 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.halil.ozel.grademate.ui.theme.GradeMateTheme
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            GradeMateTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+            GradeCalculatorScreen()
         }
     }
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+fun GradeCalculatorScreen() {
+    var midterm by remember { mutableStateOf("") }
+    var finalExam by remember { mutableStateOf("") }
+    var result by remember { mutableStateOf("") }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    GradeMateTheme {
-        Greeting("Android")
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Text("🎓 Grade Calculator", fontSize = 24.sp)
+
+        OutlinedTextField(
+            value = midterm,
+            onValueChange = { midterm = it },
+            label = { Text("Midterm Grade") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+
+        OutlinedTextField(
+            value = finalExam,
+            onValueChange = { finalExam = it },
+            label = { Text("Final Grade") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+        )
+
+        Button(onClick = {
+            val midtermGrade = midterm.toFloatOrNull()
+            val finalGrade = finalExam.toFloatOrNull()
+
+            if (midtermGrade != null && finalGrade != null) {
+                val average = midtermGrade * 0.4f + finalGrade * 0.6f
+                val letterGrade = when (average) {
+                    in 90f..100f -> "AA"
+                    in 85f..<90f -> "BA"
+                    in 80f..<85f -> "BB"
+                    in 70f..<80f -> "CB"
+                    in 60f..<70f -> "CC"
+                    in 50f..<60f -> "DC"
+                    in 40f..<50f -> "DD"
+                    else -> "FF"
+                }
+                result = "Average: %.2f → Letter Grade: %s".format(average, letterGrade)
+            } else {
+                result = "Please enter valid numbers!"
+            }
+        }) {
+            Text("CALCULATE")
+        }
+
+        if (result.isNotEmpty()) {
+            Text(text = result, fontSize = 18.sp)
+        }
     }
 }
