@@ -141,7 +141,7 @@ fun GradeCalculatorScreen() {
                     gradeResult = GradeResult(formatted, color)
                 }
             },
-            enabled = midtermError == null && finalError == null
+            enabled = midtermInput.isNotBlank() && finalInput.isNotBlank() && midtermError == null && finalError == null
         ) {
             Text("CALCULATE")
         }
